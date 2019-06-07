@@ -1,0 +1,67 @@
+<html>
+    <title>Ashwini Liman : Reduce image size</title>
+    <head>
+
+    </head>
+    <body>
+        <h2>Resize image & convert to File Object</h2>
+        <input type="text" id="imgWidthInput">
+        <input type="text" id="imgHeightInput">
+        <input type="file" id="inputImage" onchange="changeImageSize(event)"><br><br>
+        <img src="" id="previewImage">
+
+        <p id="outputText"></p>
+
+
+        <script type="text/javascript">
+            function changeImageSize(event){
+
+                var customWidth=document.getElementById("imgWidthInput").value;
+                var customHeight=document.getElementById("imgHeightInput").value;
+
+                let file = event.target.files[0];
+                var reader = new FileReader(); // CREATE AN NEW INSTANCE.
+                var fileInput = document.createElement('input');
+                reader.readAsDataURL(file);
+                reader.onload = (e) =>{
+                    var img = new Image();      
+                    img.src = e.target.result;
+
+                    img.onload = ()=> {
+                        var w = this.width;
+                        var h = this.height;
+                        var canvas = document.createElement("canvas");
+                        var context=canvas.getContext("2d");
+                        canvas.width=customWidth;
+                        canvas.height=customHeight;
+                        context.drawImage(img,0,0,customWidth,customHeight);
+                        document.getElementById("previewImage").src = canvas.toDataURL('image/png', 1.0);
+
+                        // convert URL to FILE object
+                        console.log(dataURItoBlob(canvas.toDataURL('image/png', 1.0)));
+                    }
+                }
+            }
+
+           function dataURItoBlob(dataURI) {
+                // convert base64/URLEncoded data component to raw binary data held in a string
+                var byteString;
+                if (dataURI.split(',')[0].indexOf('base64') >= 0)
+                    byteString = atob(dataURI.split(',')[1]);
+                else
+                    byteString = unescape(dataURI.split(',')[1]);
+
+                // separate out the mime component
+                var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+                // write the bytes of the string to a typed array
+                var ia = new Uint8Array(byteString.length);
+                for (var i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new File([ia], 'demoImage.png',{type:mimeString});
+            }
+       
+       </script>
+    </body>
+</html>
